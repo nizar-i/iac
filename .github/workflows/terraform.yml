@@ -34,7 +34,6 @@ jobs:
           aws s3api head-bucket
           --bucket=${{ env.TF_BUCKET }}
           --region ${{ env.AWS_REGION }}
-          --create-bucket-configuration LocationConstraint=${{ env.AWS_REGION }}
           ||
           aws s3api create-bucket
           --bucket ${{ env.TF_BUCKET }}
