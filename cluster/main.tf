@@ -23,7 +23,6 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.5.0"
@@ -82,7 +81,6 @@ module "eks" {
 
 }
 
-
 resource "aws_iam_policy" "worker_policy" {
   name        = "worker-policy"
   description = "Worker policy for the ALB Ingress"
@@ -96,39 +94,3 @@ resource "aws_iam_role_policy_attachment" "additional" {
   policy_arn = aws_iam_policy.worker_policy.arn
   role       = each.value.iam_role_name
 }
-
-
-/*
-Install ALB Controller
-*/
-/*
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-    }
-}
-
-resource "helm_release" "ingress" {
-  name       = "ingress"
-  chart      = "aws-load-balancer-controller"
-  repository = "https://aws.github.io/eks-charts"
-  version    = "1.4.6"
-
-  set {
-    name  = "autoDiscoverAwsRegion"
-    value = "true"
-  }
-  set {
-    name  = "autoDiscoverAwsVpcID"
-    value = "true"
-  }
-  set {
-    name  = "clusterName"
-    value = local.cluster_name
-  }
-}
-*/
-
-

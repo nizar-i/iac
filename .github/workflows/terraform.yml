@@ -1,0 +1,71 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-2
+
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    outputs:
+      cluster_name: ${{ steps.tf_out.outputs.cluster_name }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+
+      - id: init
+        run: terraform init
+
+      - id: plan
+        run: terraform plan -no-color -out=tf-plan
+
+      - id: apply
+        run: terraform apply -no-color -auto-approve tf-plan
+
+      - name: get cluster name
+        id: tf_out
+        run: |-
+          echo "cluster_name=$(terraform output -raw cluster_name)" >> $GITHUB_OUTPUT
+
+  config:
+    needs: terraform
+    name: Config EKS cluster
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install ALB Ingress Controller Helm Chart
+        uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          cluster-name: ${{ needs.terraform.outputs.cluster_name }}
+          namespace: default
+          name: ingress
+          chart-repository: https://aws.github.io/eks-charts
+          chart-path: aws-load-balancer-controller 
+          version: 1.4.6
+          values: >-
+            --set autoDiscoverAwsRegion=true
+            --set autoDiscoverAwsVpcID=true
+            --set clusterName=${{ needs.terraform.outputs.cluster_name }}
