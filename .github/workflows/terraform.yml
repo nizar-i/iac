@@ -6,8 +6,9 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-2
   TF_BUCKET: poc-tef-state
+  CLUSTER_NAME: poc
+  AWS_REGION: us-east-2
 
 jobs:
   terraform:
@@ -45,10 +46,18 @@ jobs:
           terraform_version: "1.6.6"
 
       - id: init
-        run: terraform init
+        run: >-
+          terraform init
+          -backend-config="bucket=${{ env.TF_BUCKET }}"
+          -backend-config="region=${{ env.AWS_REGION }}"
 
       - id: plan
-        run: terraform plan -no-color -out=tf-plan
+        run: >-
+          terraform plan
+          -no-color
+          -var "cluster_name=${{ env.CLUSTER_NAME }}"
+          -var "region=${{ env.AWS_REGION }}"
+          -out=tf-plan
 
       - id: apply
         run: terraform apply -no-color -auto-approve tf-plan
