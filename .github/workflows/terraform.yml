@@ -85,7 +85,7 @@ jobs:
           namespace: default
           name: ingress
           chart-repository: https://aws.github.io/eks-charts
-          chart-path: aws-load-balancer-controller 
+          chart-path: eks/aws-load-balancer-controller 
           version: 1.4.6
           values: >-
             autoDiscoverAwsRegion=true,autoDiscoverAwsVpcID=true
