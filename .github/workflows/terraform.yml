@@ -75,14 +75,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install ALB Ingress Controller Helm Chart
-        uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install ALB Ingress Controller Helm Chart
+        uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
+        with:
           cluster-name: ${{ needs.terraform.outputs.cluster_name }}
-          namespace: default
+          namespace: kube-system
           name: ingress
           chart-repository: https://aws.github.io/eks-charts
           chart-path: eks/aws-load-balancer-controller 
@@ -90,3 +94,15 @@ jobs:
           values: >-
             autoDiscoverAwsRegion=true,autoDiscoverAwsVpcID=true
             --set clusterName=${{ needs.terraform.outputs.cluster_name }}
+
+      - name: Set Datadog api-key Secret
+        run: |-
+          sed 's/_API_KEY_/${{ secrets.DATADOG_API_KEY }}/' datadog-config/templates/datadog-secret.yaml
+
+      - name: Install Datadog Helm Chart
+        uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
+        with:
+          cluster-name: ${{ needs.terraform.outputs.cluster_name }}
+          namespace: datadog
+          name: datadog
+          chart-path: ./datadog-config

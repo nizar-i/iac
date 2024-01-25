@@ -1,0 +1,11 @@
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  tags:
+    - env:dev
+  apm:
+    instrumentation:
+      enabledNamespaces:
+        - default
+  logs:
+    enabled: true
+    containerCollectAll: true
