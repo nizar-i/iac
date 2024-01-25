@@ -1,6 +1,7 @@
 module "poc_cluster" {
   source        = "./cluster"
-  cluster_name  = "poc"
+  cluster_name  = var.cluster_name
+  region = var.region
 }
 
 output "region" {
