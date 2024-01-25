@@ -88,6 +88,5 @@ jobs:
           chart-path: aws-load-balancer-controller 
           version: 1.4.6
           values: >-
-            autoDiscoverAwsRegion=true,
-            autoDiscoverAwsVpcID=true,
-            clusterName=${{ needs.terraform.outputs.cluster_name }}
+            autoDiscoverAwsRegion=true,autoDiscoverAwsVpcID=true
+            --set clusterName=${{ needs.terraform.outputs.cluster_name }}
