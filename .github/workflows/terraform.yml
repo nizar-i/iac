@@ -105,15 +105,16 @@ jobs:
             autoDiscoverAwsRegion=true,autoDiscoverAwsVpcID=true
             --set clusterName=${{ needs.terraform.outputs.cluster_name }}
 
-      - name: Set Datadog api-key Secret
-        run: |-
-          sed -i 's/_API_KEY_/${{ secrets.DATADOG_API_KEY }}/' datadog-config/templates/datadog-secret.yaml
-
       - name: Install Datadog Helm Chart
         uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
         with:
           cluster-name: ${{ needs.terraform.outputs.cluster_name }}
           namespace: datadog
           name: datadog
-          chart-path: ./datadog-config
-          values: datadog.clusterName=${{ needs.terraform.outputs.cluster_name }}
+          chart-repository: https://helm.datadoghq.com
+          chart-path: datadog/datadog
+          version: 3.52.0
+          config-files: datadog-config/values.yaml
+          values: >-
+            datadog.clusterName=${{ needs.terraform.outputs.cluster_name }}
+            --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }}
