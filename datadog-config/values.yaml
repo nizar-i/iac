@@ -5,8 +5,9 @@ datadog:
     - env:dev
   apm:
     instrumentation:
-      enabledNamespaces:
-        - default
+      enabled: true
+      # enabledNamespaces:
+      #   - default
   logs:
     enabled: true
     containerCollectAll: true
