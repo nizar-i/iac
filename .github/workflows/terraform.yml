@@ -116,3 +116,4 @@ jobs:
           namespace: datadog
           name: datadog
           chart-path: ./datadog-config
+          values: datadog.clusterName=${{ needs.terraform.outputs.cluster_name }}
