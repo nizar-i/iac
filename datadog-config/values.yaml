@@ -4,6 +4,7 @@ datadog:
   tags:
     - env:dev
   apm:
+    enabled: true
     instrumentation:
       enabled: true
       # enabledNamespaces:
