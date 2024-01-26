@@ -1,5 +1,7 @@
 datadog:
   apiKeyExistingSecret: datadog-secret
+  registry: public.ecr.aws/datadog
+  site: us5.datadoghq.com
   tags:
     - env:dev
   apm:
