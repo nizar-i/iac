@@ -67,17 +67,17 @@ jobs:
         run: |-
           echo "cluster_name=$(terraform output -raw cluster_name)" >> $GITHUB_OUTPUT
 
-      # - id: destroy
-      #   if: github.event.head_commit.message == 'DESTROY'
-      #   run: >-
-      #     terraform destroy
-      #     -no-color
-      #     -auto-approve
-      #     -var "cluster_name=${{ env.CLUSTER_NAME }}"
-      #     -var "region=${{ env.AWS_REGION }}"
+      - id: destroy
+        if: github.event.head_commit.message == 'DESTROY'
+        run: >-
+          terraform destroy
+          -no-color
+          -auto-approve
+          -var "cluster_name=${{ env.CLUSTER_NAME }}"
+          -var "region=${{ env.AWS_REGION }}"
 
   config:
-    # if: github.event.head_commit.message != 'DESTROY'
+    if: github.event.head_commit.message != 'DESTROY'
     needs: terraform
     name: Config EKS cluster
     runs-on: ubuntu-latest

@@ -4,14 +4,8 @@ datadog:
   tags:
     - env:dev
   apm:
-    enabled: true
     instrumentation:
       enabled: true
-      # enabledNamespaces:
-      #   - default
-  env:
-    - name: DD_APM_ENABLED
-      value: "true"
   logs:
     enabled: true
     containerCollectAll: true
